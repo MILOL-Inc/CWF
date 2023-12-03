@@ -41,8 +41,8 @@ Coral Web Framework (CWF) is a versatile and powerful web framework designed for
 $ cwf -v | Show version number.
 $ cwf -h | Shows Help Menu.
 $ cwf --init | Initialize database settings.
-$ cwf --listapps | List all apps. TODO
-$ cwf --listroutines | List all routine apps. TODO
+$ cwf --listapps | List all apps.
+$ cwf --listroutines | List all routine apps.
 $ cwf --apps | Runs enabled apps.
 $ cwf --routines | Runs all enabled routine apps.
 $ cwf --runapp 'myapp_name' | Run app in foreground mode.
