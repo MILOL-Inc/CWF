@@ -30,7 +30,7 @@ Coral Web Framework (CWF) is a versatile and powerful web framework designed for
 ## Getting Started
 * git clone https://github.com/MILOL-Inc/CWF.git
 * cd CWF/container
-* vi public/_path_.py (Add your absolute path to the container directory.)
+* vi public/__path__.py (Add your absolute path to the container directory.)
 * $ cwf --init (Create initial database.)
 * $ cwf --apps (Run manage application.)
 * Visit http://locahost:8090
