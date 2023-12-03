@@ -1,0 +1,74 @@
+Rocksdb
+
+References:
+https://python-rocksdb.readthedocs.io/en/latest/tutorial/
+https://python-rocksdb.readthedocs.io/en/latest/api/database.html#database-object
+
+
+Iterate Over WriteBatch
+
+In same cases you need to know, what operations happened on a WriteBatch. The pyrocksdb WriteBatch supports the iterator protocol, see this example.
+
+batch = rocksdb.WriteBatch()
+batch.put(b"key1", b"v1")
+batch.delete(b'a')
+batch.merge(b'xxx', b'value')
+
+for op, key, value in batch:
+    print op, key, value
+
+# prints the following three lines
+# Put key1 v1
+# Delete a
+# Merge xxx value
+
+
+
+Snapshots
+
+Snapshots are nice to get a consistent view on the database
+
+self.db.put(b"a", b"1")
+self.db.put(b"b", b"2")
+
+snapshot = self.db.snapshot()
+self.db.put(b"a", b"2")
+self.db.delete(b"b")
+
+it = self.db.iteritems()
+it.seek_to_first()
+
+# prints {b'a': b'2'}
+print dict(it)
+
+it = self.db.iteritems(snapshot=snapshot)
+it.seek_to_first()
+
+# prints {b'a': b'1', b'b': b'2'}
+print dict(it)
+
+
+Backup And Restore
+
+Backup and Restore is done with a separate rocksdb.BackupEngine object.
+
+A backup can only be created on a living database object.
+
+import rocksdb
+
+db = rocksdb.DB("test.db", rocksdb.Options(create_if_missing=True))
+db.put(b'a', b'v1')
+db.put(b'b', b'v2')
+db.put(b'c', b'v3')
+
+Backup is created like this. You can choose any path for the backup destination except the db path itself. If flush_before_backup is True the current memtable is flushed to disk before backup.
+
+backup = rocksdb.BackupEngine("test.db/backups")
+backup.create_backup(db, flush_before_backup=True)
+
+Restore is done like this. The two arguments are the db_dir and wal_dir, which are mostly the same.
+
+backup = rocksdb.BackupEngine("test.db/backups")
+backup.restore_latest_backup("test.db", "test.db")
+
+

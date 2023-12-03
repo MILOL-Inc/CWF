@@ -1,0 +1,49 @@
+# GridJS
+
+1. Include the JavaScript and CSS
+Grid.js is available on NPM and most CDNs
+
+JavaScript
+https://unpkg.com/gridjs/dist/gridjs.umd.js
+
+CSS
+https://unpkg.com/gridjs/dist/theme/mermaid.min.css
+
+2 Call the render() method
+The render() method binds and renders a Grid.js instance
+
+new Grid({ 
+  columns: ['Name', 'Email'],
+  data: [
+    ['John', 'john@example.com'],
+    ['Mike', 'mike@gmail.com']
+  ] 
+}).render(document.getElementById('table'));
+
+**A table library that works everywhere**
+
+- Simple and lightweight implementation
+- No vendor lock-in. Grid.js can be used with any JavaScript frameworks (React, Angular, Preact or VanillaJS)
+- Written in TypeScript 
+- Supports all modern browsers and IE11+
+
+## Example
+
+```js
+new Grid({
+  data: [
+    ['Mike', 33, 'mike@murphy.com'],
+    ['John', 82, 'john@conway.com'],
+    ['Sara', 26, 'sara@keegan.com']
+  ],
+  columns: ['Name', 'Age', 'Email']
+}).render(document.getElementById('wrapper'));
+```
+
+Piece of :cake:
+
+## Getting Started
+
+- [Install](https://gridjs.io/docs/install)
+- [Getting Started](https://gridjs.io/docs/index)
+- [Examples](https://gridjs.io/docs/examples/hello-world)

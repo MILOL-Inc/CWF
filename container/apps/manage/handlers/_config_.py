@@ -1,0 +1,2 @@
+PORT = '8090'
+COOKIE_SECRET = 'sc6zbymVg5MWpBU'

@@ -1,0 +1,198 @@
+Mongodb CMDs:
+
+References:
+https://pymongo.readthedocs.io/en/stable/
+https://pymongo.readthedocs.io/en/stable/tutorial.html
+https://pymongo.readthedocs.io/en/stable/examples/index.html
+
+Docker:
+
+docker run -d --name app-mongo \
+	-e MONGO_INITDB_ROOT_USERNAME=admin \
+	-e MONGO_INITDB_ROOT_PASSWORD=MILOL \
+	-p 27017:27017 \
+	-v /data/mongo/db:/data/db \
+	mongo
+	
+
+docker run -d --name app-mongo \
+	-p 27017:27017 \
+	mongo
+
+
+docker exec -it app-mongo bash
+
+$ docker exec app-mongo sh -c 'exec mongodump -d <database_name> --archive' > /data/db/bk/all-collections.archive
+
+Pymongo:
+
+from pymongo import MongoClient
+
+client = MongoClient('localhost:27018')
+db = client['test']
+
+posts = db['posts']
+
+posts.insert_one({
+   'node_id': 17216175,
+   'oid': 20180605141,
+})
+
+list(db.test.find({}))
+
+client = MongoClient('localhost:27017', username='admin', password='MILOL')
+db = client['test']
+
+posts = db['posts']
+
+posts.insert_one({
+   'node_id': 17216175,
+   'oid': 20180605141,
+})
+
+list(db.posts.find({}))
+
+Copy Datbases:
+
+
+    Use mongodump to dump the test database to an archive mongodump-test-db:
+
+    mongodump --archive="mongodump-test-db" --db=test
+
+    Use mongorestore with --nsFrom and --nsTo to restore (with database name change) from the archive:
+
+    mongorestore --archive="mongodump-test-db" --nsFrom='test.*' --nsTo='examples.*'
+
+Aggregation:
+
+
+
+Note
+
+aggregate requires server version >= 2.1.0.
+
+from bson.son import SON
+
+pipeline = [
+
+    {"$unwind": "$tags"},
+
+    {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
+
+    {"$sort": SON([("count", -1), ("_id", -1)])}
+
+]
+
+import pprint
+
+pprint.pprint(list(db.things.aggregate(pipeline)))
+[{'_id': 'cat', 'count': 3},
+ {'_id': 'dog', 'count': 2},
+ {'_id': 'mouse', 'count': 1}]
+
+To run an explain plan for this aggregation use the command() method:
+
+db.command('aggregate', 'things', pipeline=pipeline, explain=True)
+{'ok': 1.0, 'stages': [...]}
+
+Gevent
+
+PyMongo supports Gevent. Simply call Gevent’s monkey.patch_all() before loading any other modules:
+
+# You must call patch_all() *before* importing any other modules
+
+from gevent import monkey
+
+_ = monkey.patch_all()
+
+from pymongo import MongoClient
+
+client = MongoClient()
+
+PyMongo uses thread and socket functions from the Python standard library. 
+Gevent’s monkey-patching replaces those standard functions so that PyMongo does asynchronous I/O with non-blocking sockets, and schedules operations on greenlets instead of threads.
+
+When shutting down, if your application calls join() on Gevent’s Hub without first terminating these background greenlets, the call to join() blocks indefinitely. You therefore must close or dereference any active MongoClient before exiting.
+
+An example solution to this issue in some application frameworks is a signal handler to end background greenlets when your application receives SIGHUP:
+
+import signal
+
+def graceful_reload(signum, traceback):
+    """Explicitly close some global MongoClient object."""
+    client.close()
+
+signal.signal(signal.SIGHUP, graceful_reload)
+
+
+Authentication Examples¶
+
+MongoDB supports several different authentication mechanisms. These examples cover all authentication methods currently supported by PyMongo, documenting Python module and MongoDB version dependencies.
+Percent-Escaping Username and Password
+
+Username and password must be percent-escaped with urllib.parse.quote(), to be used in a MongoDB URI. For example:
+
+from pymongo import MongoClient
+
+import urllib.parse
+
+username = urllib.parse.quote_plus('user')
+
+username
+'user'
+
+password = urllib.parse.quote_plus('pass/word')
+
+password
+'pass%2Fword'
+
+MongoClient('mongodb://%s:%s@127.0.0.1' % (username, password))
+
+
+SCRAM-SHA-256 (RFC 7677)
+
+New in version 3.7.
+
+SCRAM-SHA-256 is the default authentication mechanism supported by a cluster configured for authentication with MongoDB 4.0 or later. Authentication requires a username, a password, and a database name. The default database name is “admin”, this can be overridden with the authSource option. Credentials can be specified as arguments to MongoClient:
+
+from pymongo import MongoClient
+
+client = MongoClient('example.com',
+
+                     username='user',
+
+                     password='password',
+
+                     authSource='the_database',
+
+                     authMechanism='SCRAM-SHA-256')
+
+Or through the MongoDB URI:
+
+uri = "mongodb://user:password@example.com/?authSource=the_database&authMechanism=SCRAM-SHA-256"
+
+client = MongoClient(uri)
+
+SCRAM-SHA-1 (RFC 5802)
+
+New in version 2.8.
+
+SCRAM-SHA-1 is the default authentication mechanism supported by a cluster configured for authentication with MongoDB 3.0 or later. Authentication requires a username, a password, and a database name. The default database name is “admin”, this can be overridden with the authSource option. Credentials can be specified as arguments to MongoClient:
+
+from pymongo import MongoClient
+
+client = MongoClient('example.com',
+
+                     username='user',
+
+                     password='password',
+
+                     authSource='the_database',
+
+                     authMechanism='SCRAM-SHA-1')
+
+Or through the MongoDB URI:
+
+uri = "mongodb://user:password@example.com/?authSource=the_database&authMechanism=SCRAM-SHA-1"
+
+client = MongoClient(uri)

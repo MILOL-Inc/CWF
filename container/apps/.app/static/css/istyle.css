@@ -1,0 +1,190 @@
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 80px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 50px;
+  background-color: #f8f8f8;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 60px 15px 0;
+}
+
+.footer > .container {
+  padding-top: 16px;
+  margin-left: 0px;
+}
+
+code {
+  font-size: 80%;
+}
+
+@-moz-document url-prefix() {
+  fieldset { display: table-cell; }
+}
+
+/* MILOL Inc. styles
+-------------------------------------------------- */
+
+#wrapper {margin-top: 60px;}
+.blk { clear: both; }
+A:link{ color: #103cdd; text-decoration: none; }
+A:visited{ color: #103cdd; text-decoration: none; }
+A:active{ color:#103cdd; text-decoration: none; }
+A:hover{ color: #CCC; text-decoration: none; }
+.sp6 { height: 30px; clear: both; }
+.sp10x { height:10px; }
+.sp20x { height:20px; }
+.sp30x { height:30px; }
+.sp40x { height:40px; }
+.sp50x { height:50px; }
+.sp60x { height:60px; }
+.front_ads { background: #9e9d9d; text-align: center; padding: 10px; height: 500px; background-image: url("../img/PSfrontad960x500NUCi5.jpg"); background-repeat: no-repeat; background-position: center top; }
+.front_ads_mobile { background: #9e9d9d; text-align: center; padding: 10px }
+P { font-size: 14px; color: #444444; }
+input[type="text"]:disabled {
+    background: #dddddd;
+}
+#chat { position: absolute; right: 15px; bottom: 9px; }
+#wrapper .button { border: 1px solid #1e53ac; background: #2470ed; padding: 10px 10px; -webkit-border-radius: 4px; -khtml-border-radius: 4px; border-radius: 4px; font-family: Arial, Helvetica, sans-serif; font-weight:normal; text-decoration: none; vertical-align: middle; letter-spacing:1px; }
+#wrapper .button:hover { border: 1px solid #1e53ac; background: #2369de; }
+#wrapper .button:active { border: 1px solid #1e53ac; background: #2369de; }
+#wrapper .buttonB { border: 1px solid #61B329; background: #41A317; padding: 10px 10px; -webkit-border-radius: 4px; -khtml-border-radius: 4px; border-radius: 4px; font-family: Arial, Helvetica, sans-serif; font-weight:normal; text-decoration: none; vertical-align: middle; letter-spacing:1px; }
+#wrapper .buttonB:hover { border: 1px solid #61B329; background: #409819; }
+#wrapper .buttonB:active { border: 1px solid #61B329; background: #409819; }
+#footer { background: #f8f8f8; position: absolute; width: 100%; left: 0; bottom: 0; height: 50px; }
+.hrln { background-color: #e9e9e9; height: 1px; margin: 1px 0; width: 100%; }
+.hd_compare { border-bottom: 1px solid #e9e9e9; }
+#prodbanner { height: 35px; padding-left: 5px; padding-right: 5px; padding-top: 5px; }
+#prodbanner li {font-size: 14px; color:#444444; }
+#lhd {  float: left; left: 10px; }
+#rhd {  float: right; right: 10px; text-align: right; }
+.bxh { font-size: 18px; }
+.pitch { font-size: 18px; color: #7a7a7a; }
+.tbg { padding: 1px 15px; border: 1px solid #e9e9e9; text-align: left; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f1f1f1; }
+.tbg_t { padding: 15px; border: 1px solid #e9e9e9; text-align: left; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f1f1f1; }
+.tbg_txt { padding: 15px; border: 1px solid #e9e9e9; text-align: left; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f8f8f8; }
+.tbg_doc { padding: 15px; border: 1px solid #e9e9e9; text-align: left; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f8f8f8; }
+.pod1 { float: left; width: 300px; height: 600px; padding: 5px; }
+.pod2 { float: left; width: 300px; height: 600px; padding: 5px; }
+.pod3 { float: left; width: 299px; height: 600px; padding: 5px; }
+.compare { position: static; width: 960px; height: 400px; }
+.prod_img { height: 200px; }
+.prod_desc { height: 80px; }
+.supp_form { padding: 10px; width: 340px; border: 1px solid #e9e9e9; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f1f1f1; }
+.supp_user { padding: 10px; width: 440px; border: 1px solid #e9e9e9; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #f1f1f1; }
+.supp_tech { padding: 10px; width: 440px; border: 1px solid #e9e9e9; -webkit-border-radius: 5px; -khtml-border-radius: 5px; border-radius: 5px; background: #99FFCC; }
+#attributes_t { height: 100%; display: block; }
+#priceField { font-size:20px; }
+
+#prodSpace p {font-size:14px;color:#444444;}
+#prodSpace h3 {font-size:17px;}
+.prod { position: relative; }
+
+ul.listing{
+  margin: 0;
+  width: 960px;
+}
+ul.listing li{
+  list-style-type: none;
+  float: left;
+  margin:0 10px 50px 0;
+  width: 280px;
+}
+
+#paymentDesc { display: none; }
+@media (min-width: 768px) {
+#paymentDesc { display: block; }
+}
+
+#imgProd { width: 460px; }
+@media (max-width: 768px) {
+#imgProd { display: block; width: 300px; }
+}
+
+/* JSslides styles.
+-------------------------------------------------- */
+
+#slides { display: none }
+ /* Center the slideshow */
+.containerjs {
+	margin: 0 auto
+}
+
+/* Custom CSS MenuBar */
+
+.navbar-default {
+  background-color: #9e9d9d;
+  border-color: #828282;
+}
+.navbar-default .navbar-brand {
+  color: #ecf0f1;
+}
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+  color: #ffffff;
+}
+.navbar-default .navbar-text {
+  color: #ecf0f1;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #ecf0f1;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: #ffffff;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+  color: #ffffff;
+  background-color: #828282;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+  color: #ffffff;
+  background-color: #828282;
+}
+.navbar-default .navbar-toggle {
+  border-color: #828282;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+  background-color: #828282;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #ecf0f1;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+  border-color: #ecf0f1;
+}
+.navbar-default .navbar-link {
+  color: #ecf0f1;
+}
+.navbar-default .navbar-link:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #ecf0f1;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #ffffff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #ffffff;
+    background-color: #828282;
+  }
+}

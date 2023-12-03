@@ -1,0 +1,182 @@
+Docker:
+
+RAM:
+docker run --name app-redis -d redis
+
+Persistent Storage:
+docker run -d --name app-redis -v /data/redis/db:/data -p 6379:6379 redis redis-server --save 60 1 --loglevel warning
+
+
+Redis CLI via Docker:
+docker run -it --rm redis redis-cli -h app-redis
+
+SET Bahamas Nassau
+GET Bahamas
+MSET Lebanon Beirut Norway Oslo France Paris
+MGET Lebanon Norway Bahamas
+
+Flush DB:
+127.0.0.1:6379> FLUSHDB
+OK
+127.0.0.1:6379> QUIT
+
+
+docker exec -it app-redis bash
+
+pip3 install redis
+OR
+pip3 install redis[hiredis]
+
+>>> import redis
+>>> r = redis.Redis(host='localhost', port=6379, db=0)
+>>> r.set('foo', 'bar')
+True
+>>> r.get('foo')
+b'bar'
+
+# Auto handle bytes to strings.
+r = redis.Redis(decode_responses=True)
+r.set('mykey', 'thevalueofmykey')
+r.get('mykey')
+
+>>> import redis
+>>> r = redis.Redis()
+>>> r.mset({"Croatia": "Zagreb", "Bahamas": "Nassau"})
+True
+
+>>> r.get("Bahamas")
+b'Nassau'
+
+Consider a case where you want to use calendar dates as keys:
+>>> stoday = today.isoformat()  # Python 3.7+, or use str(today)
+>>> stoday
+'2019-03-10'
+>>> r.sadd(stoday, *visitors)  # sadd: set-add
+3
+>>> r.smembers(stoday)
+{b'dan', b'alex', b'jon'}
+>>> r.scard(today.isoformat())
+3
+
+Using Key Expiry:
+>>> from datetime import timedelta
+
+>>> # setex: "SET" with expiration
+>>> r.setex(
+...     "runner",
+...     timedelta(minutes=1),
+...     value="now you see me, now you don't"
+... )
+True
+
+>>> r.ttl("runner")  # "Time To Live", in seconds
+58
+>>> r.pttl("runner")  # Like ttl, but milliseconds
+54368
+
+>>> r.get("runner")  # Not expired yet
+b"now you see me, now you don't"
+
+>>> r.expire("runner", timedelta(seconds=3))  # Set new expire window
+True
+>>> # Pause for a few seconds
+>>> r.get("runner")
+>>> r.exists("runner")  # Key & value are both gone (expired)
+0
+
+
+Encryption:
+python -m pip install cryptography
+
+>>> import json
+>>> from cryptography.fernet import Fernet
+
+>>> cipher = Fernet(Fernet.generate_key())
+>>> info = {
+...     "cardnum": 2211849528391929,
+...     "exp": [2020, 9],
+...     "cv2": 842,
+... }
+
+>>> r.set(
+...     "user:1000",
+...     cipher.encrypt(json.dumps(info).encode("utf-8"))
+... )
+
+>>> r.get("user:1000")
+b'gAAAAABcg8-LfQw9TeFZ1eXbi'  # ... [truncated]
+
+>>> cipher.decrypt(r.get("user:1000"))
+b'{"cardnum": 2211849528391929, "exp": [2020, 9], "cv2": 842}'
+
+>>> json.loads(cipher.decrypt(r.get("user:1000")))
+{'cardnum': 2211849528391929, 'exp': [2020, 9], 'cv2': 842}
+
+
+Connection Pools:
+>>> pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+>>> r = redis.Redis(connection_pool=pool)
+
+Compression:
+>>> import bz2
+
+>>> blob = "i have a lot to talk about" * 10000
+>>> len(blob.encode("utf-8"))
+260000
+
+>>> # Set the compressed string as value
+>>> r.set("msg:500", bz2.compress(blob.encode("utf-8")))
+>>> r.get("msg:500")
+b'BZh91AY&SY\xdaM\x1eu\x01\x11o\x91\x80@\x002l\x87\'  # ... [truncated]
+>>> len(r.get("msg:500"))
+122
+>>> 260_000 / 122  # Magnitude of savings
+2131.1475409836066
+
+>>> # Get and decompress the value, then confirm it's equal to the original
+>>> rblob = bz2.decompress(r.get("msg:500")).decode("utf-8")
+>>> rblob == blob
+True
+
+Using Hiredis:
+python -m pip install hiredis
+
+>>> for key, value in (('A', '1'), ('B', '2'), ('C', '3')):
+...     r.set(key, value)
+>>> for key in r.scan_iter():
+...     print(key, r.get(key))
+A 1
+B 2
+C 3
+
+# redis/utils.py
+try:
+    import hiredis
+    HIREDIS_AVAILABLE = True
+except ImportError:
+    HIREDIS_AVAILABLE = False
+
+
+# redis/connection.py
+if HIREDIS_AVAILABLE:
+    DefaultParser = HiredisParser
+else:
+    DefaultParser = PythonParser
+
+
+Pipelines:
+>>> pipe = r.pipeline()
+>>> pipe.set('foo', 5)
+>>> pipe.set('bar', 18.5)
+>>> pipe.set('blee', "hello world!")
+>>> pipe.execute()
+[True, True, True]
+
+PubSub
+
+>>> r = redis.Redis(...)
+>>> p = r.pubsub()
+>>> p.subscribe('my-first-channel', 'my-second-channel', ...)
+>>> p.get_message()
+{'pattern': None, 'type': 'subscribe', 'channel': b'my-second-channel', 'data': 1}
+

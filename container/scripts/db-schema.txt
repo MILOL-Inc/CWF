@@ -1,0 +1,168 @@
+
+assets: { data: [{}], timestamp: unixmiliseconds}
+
+screener [ symbol(UNIQUE INDEX), market, price, ch24H, volUSD24H, aveUSD24H, updated ]
+
+exchanges [ FROM CoinCap.io API ]
+
+rawlog_assets [ symbol(UNIQUE INDEX), price, vol24H, utc_timestamp, raw_unixtime ]
+
+assets [ symbol(UNIQUE INDEX), market, name, rank, id, supply, maxSupply, marketCapUSD, updated ]
+
+accounts [ username, name, last, company, tier, admin, stats ]
+
+orderqueue [ id, username, queue { symbol, buy, sell, track_id } ]
+
+trackqueue [ id, username, assets[symbols] ]
+
+orderbook [ id, username, symbol, type, price, utc_timestamp ]
+
+bookkeeping [ id, username, orders[ symbol, priceUSD, quantity, type[buy|sell|swap] ], utc_timestamp ]
+
+algorithms [ id, name, desc, val: { limitUP: 4.5, limitDOWN: 1.8 } ]
+
+asset_ai [ symbol, algo_id, score, updated ]
+
+simulations [ id, desc, trackqueue_id, algo_id ]
+
+ALGO-1: Higher percentage trigger, lower trade quatities.
+GOAL: $5000, 28 Trades
+limitUP: 4.5, limitDOWN: 1.8
+
+ALGO-2: Lowest percentage trigger, daily higher trade quantities.
+GOAL: $5000, 42 Trades
+limitUP: 2.5, limitDOWN: 1.8
+
+ALGO-3: Medium percentage trigger, highest trade quantities.
+GOAL: $5000, 70 Trades
+limitUP: 3.0, limitDOWN: 1.8
+
+CoreLogic:
+p = price
+volUSD24H = Average Volume in USD
+lows{ 1:[p, utc],2: [p, utc],3: [p, utc],4: [p, utc],5:[p, utc] } = Lastest lows of support
+highs{ 1:[p, utc],2: [p, utc],3: [p, utc],4: [p, utc],5:[p, utc] } = Lastest highs of resistant
+
+score metrics:
+downtrend:
+00: p < lows(all)
+10: p < lows(1,2,3,4)
+20: p < lows(1,2,3)
+30: p < lows(1,2)
+40: p < lows(1)
+
+uptrend:
+00: p > highs(all)
+10: p > highs(1,2,3,4)
+20: p > highs(1,2,3)
+30: p > highs(1,2)
+40: p > highs(1)
+
+% of Change:
+4.0: Full %
+2.5: %/2
+1.5: %/3 
+
+Basic:
+IF p <= volUSD24H - %
+
+#Best Scenario Max Uptrend:
+IF p > lows(all)
+AND
+IF p < highs(1) - %
+AND
+IF p < volUSD24H - %
+AND
+deltaDays = lows(5)-lows(1)
+IF deltaDays <= 7
+
+#Worst Scenario Max Downtrend:
+IF p < lows(all)
+AND
+IF p < lows(1) + %
+AND
+IF p < volUSD24H + %
+AND
+deltaDays = lows(5)-lows(1)
+IF deltaDays <= 7
+
+#Uptrend Scenario:
+scrore = 0
+
+IF p > lows(all):
+scrore = 80
+ELIF p > lows(1,2,3,4):
+score = 70
+ELIF p > lows(1,2,3):
+score = 60
+ELIF p > lows(1,2):
+score = 50
+ELIF p > lows(1):
+score = 40
+
+ELIF p < highs(1) - %:
+score = score + 4
+ELIF p < highs(1) - %/2:
+score = score + 2.5
+ELIF p < highs(1) - %/3:
+score = score + 1.5
+
+ELIF p <= volUSD24H - %:
+score = score + 4
+ELIF p <= volUSD24H - %/2:
+score = score + 2.5
+ELIF p <= volUSD24H - %/3:
+score = score + 1.5
+
+deltaDays = lows(5)-lows(1)
+ELIF deltaDays > 365: score = score + 0
+ELIF deltaDays <= 365: score = score + 1
+ELIF deltaDays <= 200: score = score + 1
+ELIF deltaDays <= 100: score = score + 1
+ELIF deltaDays <= 60: score = score + 1
+ELIF deltaDays <= 30: score = score + 1
+ELIF deltaDays <= 15: score = score + 1
+ELIF deltaDays <= 7: score = score + 2
+ELIF deltaDays <= 3: score = score + 2
+
+#Downtrend Scenario:
+scrore = 0
+
+IF p !< lows(all):
+pass
+ELIF p < lows(1,2,3,4):
+score = 10
+ELIF p < lows(1,2,3):
+score = 20
+ELIF p < lows(1,2):
+score = 30
+ELIF p < lows(1):
+score = 40
+ELSE
+score = 0
+
+ELIF p < lows(1) + %:
+score = score + 4
+ELIF p < lows(1) + %/2:
+score = score + 2.5
+ELIF p < lows(1) + %/3:
+score = score + 1.5
+
+ELIF p < volUSD24H + %:
+score = score + 4
+ELIF p < volUSD24H + %/2:
+score = score + 2.5
+ELIF p < volUSD24H + %/3:
+score = score + 1.5
+
+deltaDays = lows(5)-lows(1)
+ELIF deltaDays > 365: score = score + 0
+ELIF deltaDays <= 365: score = score + 1
+ELIF deltaDays <= 200: score = score + 1
+ELIF deltaDays <= 100: score = score + 1
+ELIF deltaDays <= 60: score = score + 1
+ELIF deltaDays <= 30: score = score + 1
+ELIF deltaDays <= 15: score = score + 1
+ELIF deltaDays <= 7: score = score + 2
+ELIF deltaDays <= 3: score = score + 2
+

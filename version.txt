@@ -1,0 +1,76 @@
+Coral-Web Core Framework
+
+09-26-2021
+Version: 0.1
+* Initial Release.
+* File Structure.
+
+10-09-2021
+Version: 0.2
+* Initial Release for production.
+
+2-02-2022
+Version: 0.3
+* Updated Release for production.
+
+9-09-2022
+Version: 0.4
+* Implemented SQlite API.
+* Implemented PyDBLite API.
+* implemented Rocksdb API.
+
+9-11-2022
+Version: 0.5
+* Added apps directory and logic to organize apps. They run only if status True in the config file.
+* Added routines directory and logic to orgize routines. They run only if status True in the config file.
+* Added library directory package.
+* Added runserver startup application.
+
+9-13-2022
+Version: 0.6
+* Added createApp logic to automate the creation of apps.
+
+9-15-2022
+Version: 0.7
+* Added mongodb API.
+
+9-16-2022
+Version: 0.8
+* Added redis API.
+
+10-03-2022
+Version: 0.9
+* Upgraded Bootstrap CSS and JS to 5.2.1.
+
+10-27-2022
+Version: 0.10
+* Implemented hashing password logic.
+* Added rsa cryptografic functions.
+
+09-25-2023
+Version: 0.11
+* Refactore application path logic.
+
+09-27-2023
+Version: 0.12
+* Integrated Bootstrap basic themes to core apps.
+* Added Bootstrap icons.
+* Added login page using rsa cryptografic functions.
+* Added a 404.html error landing page.
+
+10-09-2023
+Version: 0.13
+* Added .manage directory.
+* Added manage app directory as a default application.
+* Modified .app directory.
+* Added MIT license into terms.html page.
+* README content into about.html page.
+
+11-20-2023
+Version: 0.14
+* Command API and GUI interface to manage: Users, Apps, Routines, Projects & Settings.
+* SQLite integration to manage system resources.
+
+12-02-2023
+Version: 0.15
+* JSON Log API (server.log & access.log) across all core libraries, routines, and apps.

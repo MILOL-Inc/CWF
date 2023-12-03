@@ -1,0 +1,12 @@
+# Create a contained developer enviroment.
+pip install virtualenv
+virtualenv cwf
+source cwf/bin/activate
+deactivate
+
+# Install requirements:
+pip install tornado
+pip install rsa
+
+# Run Util server application:
+python runserver.py

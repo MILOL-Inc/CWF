@@ -1,0 +1,26 @@
+body {
+    padding-top: 0px;
+    /*background-image: url("../../static/img/MIA001.png");*/
+}
+#main-map { position: absolute; top: 0px; left:0px; }
+
+#headerG {
+    text-align: center;
+}
+
+@media print {
+
+  @page {                
+    size: A4;
+    margin: 0mm;
+    size: landscape;
+  }
+
+  html, body {
+    width: 1920px;
+  }
+
+  body {
+    margin: 0 auto;
+  }
+}

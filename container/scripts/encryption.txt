@@ -1,0 +1,331 @@
+###Method 1:
+
+pip install cryptography
+
+from cryptography.fernet import Fernet
+ 
+# we will be encrypting the below string.
+message = "hello geeks"
+ 
+# generate a key for encryption and decryption
+# You can use fernet to generate
+# the key or use random key generator
+# here I'm using fernet to generate key
+ 
+key = Fernet.generate_key()
+ 
+# Instance the Fernet class with the key
+ 
+fernet = Fernet(key)
+ 
+# then use the Fernet class instance
+# to encrypt the string string must
+# be encoded to byte string before encryption
+encMessage = fernet.encrypt(message.encode())
+ 
+print("original string: ", message)
+print("encrypted string: ", encMessage)
+ 
+# decrypt the encrypted string with the
+# Fernet instance of the key,
+# that was used for encrypting the string
+# encoded byte string is returned by decrypt method,
+# so decode it to string with decode methods
+decMessage = fernet.decrypt(encMessage).decode()
+ 
+print("decrypted string: ", decMessage)
+
+_________________
+
+vi pwd.txt
+MyPasswordInText
+
+
+# Description: This program will be executed only when we have a new password file.
+
+from cryptography.fernet import Fernet
+import os
+
+### 1. read your password file
+with open('pwd.txt') as f:
+    mypwd = ''.join(f.readlines())
+
+### 2. generate key and write it in a file
+key = Fernet.generate_key()
+f = open("refKey.txt", "wb")
+f.write(key)
+f.close()
+
+### 3. encrypt the password and write it in a file
+refKey = Fernet(key)
+mypwdbyt = bytes(mypwd, 'utf-8') # convert into byte
+encryptedPWD = refKey.encrypt(mypwdbyt)
+f = open("encryptedPWD.txt", "wb")
+f.write(encryptedPWD)
+f.close()
+
+### 4. delete the password file
+if os.path.exists("pwd.txt"):
+  os.remove("pwd.txt")
+else:
+  print("File is not available")
+
+
+
+_________________
+
+
+
+###Method 2:
+
+pip install rsa
+
+import rsa
+ 
+# generate public and private keys with
+# rsa.newkeys method,this method accepts
+# key length as its parameter
+# key length should be atleast 16
+publicKey, privateKey = rsa.newkeys(512)
+ 
+# this is the string that we will be encrypting
+message = "hello geeks"
+ 
+# rsa.encrypt method is used to encrypt
+# string with public key string should be
+# encode to byte string before encryption
+# with encode method
+encMessage = rsa.encrypt(message.encode(), publicKey)
+ 
+print("original string: ", message)
+print("encrypted string: ", encMessage)
+ 
+# the encrypted message can be decrypted
+# with ras.decrypt method and private key
+# decrypt method returns encoded byte string,
+# use decode method to convert it to string
+# public key cannot be used for decryption
+decMessage = rsa.decrypt(encMessage, privateKey).decode()
+ 
+print("decrypted string: ", decMessage)
+
+# Write keys to a file:
+(pubkey, privkey) = rsa.newkeys(2048)
+>>> f = open('privateKey', 'w')     
+>>> f.write(privkey.save_pkcs1().decode('utf-8'))
+
+
+generate_secret(512)
+pubkey, privkey = load_secret()
+encMessage = encrypt_string('MILOL', pubkey)
+decrypt_message(encMessage, privkey)
+
+hash = rsa.compute_hash(message, 'SHA-1')
+hex = hash.hexdigest()
+
+import rsa
+
+def generate_secret(bits=4096):
+    """Generate rsa keys for authentication."""
+    import rsa
+    (pubkey, privkey) = rsa.newkeys(bits, poolsize=4)
+    # Save private and pub key
+    priv_key_file = open('privateKey', 'w+')
+    priv_key_file.write(privkey.save_pkcs1().decode('utf-8'))
+    priv_key_file.close()
+    pub_key_file = open('publicKey', 'w+')
+    pub_key_file.write(pubkey.save_pkcs1().decode('utf-8'))
+    pub_key_file.close()
+
+def load_secret():
+    """Load rsa keys from file."""
+    with open('publicKey', 'rb') as fp:         
+        fpkey = fp.read()
+        pubkey = rsa.PublicKey.load_pkcs1(fpkey)
+    with open('privateKey', 'rb') as fs:           
+        fskey = fs.read()
+        privkey = rsa.PrivateKey.load_pkcs1(fskey)
+    return (pubkey, privkey)
+
+def encrypt_string(message, pubkey):
+    """ rsa.encrypt method is used to encrypt
+    string with public key string should be
+    encode to byte string before encryption
+    with encode method
+    """
+    encMessage = rsa.encrypt(message.encode('utf8'), pubkey)
+    return encMessage
+
+def decrypt_message(encMessage, privkey):
+    """ the encrypted message can be decrypted
+    with rsa.decrypt method and private key
+    decrypt method returns encoded byte string,
+    use decode method to convert it to string
+    public key cannot be used for decryption
+    """
+    decMessage = rsa.decrypt(encMessage, privkey).decode('utf8')
+    return decMessage
+
+def generate_pem(self, save_path, nbits=2048):
+        """
+        """
+        make_dir(save_path)
+        self.public_key, self.private_key = rsa.newkeys(nbits)
+        public_pem = os.path.join(save_path, 'public.pem')
+        private_pem = os.path.join(save_path, 'private.pem')
+        try:
+            with open(public_pem, 'w+') as fp:
+                fp.write(self.public_key.save_pkcs1().decode())
+
+            with open(private_pem, 'w+') as fp:
+                fp.write(self.private_key.save_pkcs1().decode())
+        except Exception as ex:
+            logger.error(ex)
+
+        return public_pem, private_pem
+
+def gen_addr_key_pair():
+	pubkey, privkey = rsa.newkeys(384)
+	return pubkey_to_address(pubkey), privkey
+
+def on_initializing(self, *args, **kwargs):
+		(self.pubkey, self.privkey) = rsa.newkeys(1024)
+		self.server_pubkey = rsa.PublicKey.load_pkcs1(self.read_server_publickey())
+
+		return True 
+
+###Method 3:
+
+Hiding and encrypting passwords in Python?
+
+    Last Updated : 16 Feb, 2022
+
+There are various Python modules that are used to hide the user’s inputted password, among them one is maskpass() module. In Python with the help of maskpass() module and base64() module we can hide the password of users with asterisk(*) during input time and then with the help of base64() module it can be encrypted.
+maskpass()
+
+maskpass() is a Python module that can be used to hide passwords of users during the input time. The maskpass() modules also provides a secure way to handle the password prompt where programs interact with the users via terminal.
+
+pip install maskpass
+
+# Type password without left CTRL press key
+import maskpass  # importing maskpass library
+ 
+# masking the password
+pwd = maskpass.advpass() 
+print('Password : ', pwd)
+
+F:\files>python password.py
+Enter Password: ***************
+Password : greeksforgreeks
+
+
+###Method 4:
+
+pip install bcrypt
+
+import bcrypt  
+password = "mypasswordstring"
+ 
+# Encode password into a readable utf-8 byte code: 
+password = password.encode('utf-8')
+ 
+# Hash the ecoded password and generate a salt: 
+hashedPassword = bcrypt.hashpw(password, bcrypt.gensalt())
+print(hashedPassword)
+
+import bcrypt
+ 
+# store your password:
+password = str(input("input password: ")) 
+ 
+# Encode the stored password:
+password = password.encode('utf-8')
+ 
+# Encrypt the stored pasword:
+hashed = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
+ 
+# Create an authenticating password input field to check if a user enters the correct password 
+check = str(input("check password: ")) 
+ 
+# Encode the authenticating password as well 
+check = check.encode('utf-8') 
+ 
+# Use conditions to compare the authenticating password with the stored one:
+if bcrypt.checkpw(check, hashed):
+    print("login success")
+else:
+    print("incorrect password")
+
+
+###Method 5:
+#base64 is NOT encryption. it's obfuscation at best. 
+
+>>> import base64
+>>>  print(base64.b64encode("password".encode("utf-8")))
+cGFzc3dvcmQ=
+>>> print(base64.b64decode("cGFzc3dvcmQ=").decode("utf-8"))
+password
+
+
+###Method 6:
+
+Here is a simple method:
+
+    Create a python module - let's call it peekaboo.py.
+    In peekaboo.py, include both the password and any code needing that password
+    Create a compiled version - peekaboo.pyc - by importing this module (via python commandline, etc...).
+    Now, delete peekaboo.py.
+    You can now happily import peekaboo relying only on peekaboo.pyc. Since peekaboo.pyc is byte compiled it is not readable to the casual user.
+
+This should be a bit more secure than base64 decoding - although it is vulnerable to a py_to_pyc decompiler.
+
+
+###Method 7:
+
+>>> import hashlib
+>>> hash_object = hashlib.sha1(b'HelWorld')
+>>> pbHash = hash_object.hexdigest()
+>>> length = len(pbHash.decode("hex"))
+
+####Method 8:
+
+>>> import scrypt
+>>> data = scrypt.encrypt('a secret message', 'password', maxtime=0.1) # This will take at least 0.1 seconds
+>>> data[:20]
+'scrypt\x00\r\x00\x00\x00\x08\x00\x00\x00\x01RX9H'
+>>> scrypt.decrypt(data, 'password', maxtime=0.1) # This will also take at least 0.1 seconds
+'a secret message'
+>>> scrypt.decrypt(data, 'password', maxtime=0.05) # scrypt won't be able to decrypt this data fast enough
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+scrypt.error: decrypting file would take too long
+>>> scrypt.decrypt(data, 'wrong password', maxtime=0.1) # scrypt will throw an exception if the password is incorrect
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+scrypt.error: password is incorrect
+
+REFERENCES:
+https://www.geeksforgeeks.org/how-to-encrypt-and-decrypt-strings-in-python/
+
+https://www.geeksforgeeks.org/hiding-and-encrypting-passwords-in-python/
+
+https://www.makeuseof.com/encrypt-password-in-python-bcrypt/
+
+https://stackoverflow.com/questions/157938/hiding-a-password-in-a-python-script-insecure-obfuscation-only
+
+https://ch-nabarun.medium.com/how-to-encrypt-and-decrypt-application-password-using-python-15893cd28bef
+
+https://www.programcreek.com/python/example/104537/rsa.newkeys
+
+https://stuvel.eu/python-rsa-doc/usage.html
+
+https://stackoverflow.com/questions/37482854/how-to-create-a-sha1-hash-in-python
+
+# Deployment Algorithm:
+
+At the client level:
+client_hex_str = get_hash_sha1_hex(user_string_passd+CYPHER.encode('utf8'))
+
+At the server level:
+encObject = encrypt_message(client_hex_str.encode('utf8'), pubkey)
+db_encrypted_hex = get_hash_sha1_hex(encObject)
