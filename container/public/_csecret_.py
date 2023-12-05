@@ -1,1 +1,1 @@
-COOKIE_SECRET = '9ct!1ntF3rbgVSvus@dw)PKwv&E$JomO'
+COOKIE_SECRET = 'FfrsIOh*Dq!AMQmyUspfn2v9EfX6%c@6'

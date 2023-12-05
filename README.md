@@ -27,20 +27,40 @@ Coral Web Framework (CWF) is a versatile and powerful web framework designed for
 * Python smtplib API: Simplify Email handling in Python.
 * JSON Logs API: Efficient logging mechanism using JSON for better data structure and retrieval.
 
+## Installion Requirements
+* `pip install virtualenv`
+* `pip install tornado`
+* `pip install rsa`
+
+## Development Environment
+* `cd ~`
+* `mkdir env`
+* `cd env`
+* `virtualenv cwf`
+* `source cwf/bin/activate` (Activate a session environment.)
+
+### Installion Requirements
+* `pip install virtualenv`
+* `pip install tornado`
+* `pip install rsa`
+
 ## Getting Started
 * `git clone https://github.com/MILOL-Inc/CWF.git`
 * `cd CWF/container`
-* `vi public/_path_.py` (Add your absolute path to the container directory.)
 * `cwf --init` (Create initial database.)
-* `cwf --apps` (Run manage application.)
+* `cwf --runapp 'manage'` (Run manage back-end application.)
 * Visit http://locahost:8090
-* Credentials: ad@cwf.local (Get password from `public/_pass_.py` file. )
+* Credentials: ad@cwf.local (Get password from `public/_pass_.py` file.)
 
 ## Documentation
 ```
 $ cwf -v | Show version number.
 $ cwf -h | Shows Help Menu.
-$ cwf --init | Initialize database settings.
+$ cwf --init | Initialize database settings using current directory as path."
+$ cwf --init '/path/to/cwf/container' | Initialize database settings."
+$ cwf --reset | Reset database settings using current directory as path."
+$ cwf --reset '/path/to/cwf/container' | Reset database settings."
+$ cwf --setpath '/path/to/cwf/container' | Set/Update container path settings."
 $ cwf --listapps | List all apps.
 $ cwf --listroutines | List all routine apps.
 $ cwf --apps | Runs enabled apps.

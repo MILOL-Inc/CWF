@@ -9,6 +9,7 @@ import time
 APP_NAME = _name_.APP_NAME
 PORT = _config_.PORT
 PATH = _path_.PATH
+RPATH = os.path.abspath(PATH)
 sys.path.append('{0}'.format(PATH))
 import public.config as config
 import public.library.core as core

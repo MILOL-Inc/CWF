@@ -4,7 +4,8 @@ from handlers._name_ import APP_NAME
 
 
 # Import Global Configs:
-sys.path.append('{0}'.format(PATH))
+RPATH = os.path.abspath(PATH)
+sys.path.append(RPATH)
 import public.config as config
 from public.library import core
 

@@ -1,1 +1,1 @@
-PATH = '/home/mo/Documents/Code/Workspace/cwf/container'
+PATH = '.'

@@ -7,7 +7,7 @@ import random, string
 PARENT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 PARENT_ROOT = os.path.abspath(os.path.join(PARENT_ROOT, os.pardir))
 PARENT_ROOT = os.path.abspath(os.path.join(PARENT_ROOT, os.pardir))
-sys.path.append('{0}'.format(PARENT_ROOT))
+sys.path.append(PARENT_ROOT)
 
 # Import Global Configs:
 import public.config as config
@@ -260,7 +260,7 @@ def encrypt_message(message, pubkey):
 
 
 def decrypt_message(encMessage, privkey):
-	""" the encrypted message can be decrypted
+	""" The encrypted message can be decrypted
 	with rsa.decrypt method and private key
 	decrypt method returns encoded byte string,
 	use decode method to convert it to string
@@ -320,11 +320,12 @@ def check_rsa_password(user, hex_string, enc_msg):
 	pubkey, privkey = load_secret()
 	decobject = decrypt_message(enc_msg, privkey)
 	print('decrypred:', decobject)
+	print('hex_string:', hex_string)
 	if hex_string == decobject:
 		severLog.info(config.jsonLogger(getUTCNow(), 'INFO', f'', [], 'check_rsa_password', ''))
 		return True
 	else:
-		severLog.warning(config.jsonLogger(getUTCNow(), 'WARN', f'Password does NOT match.', [], 'check_rsa_password', ''))
+		severLog.error(config.jsonLogger(getUTCNow(), 'WARN', f'Password does NOT match.', [user, hex_string, decobject], 'check_rsa_password', ''))
 		return False
      
 

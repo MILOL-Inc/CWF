@@ -1,1 +1,1 @@
-CYPHER = 'YfGcgKGdsp1y775N'
+CYPHER = 'yV5XAY9dMA*Iw3Sq'

@@ -3,7 +3,8 @@ from handlers._path_ import PATH
 
 
 # Import Global Configs:
-sys.path.append('{0}'.format(PATH))
+RPATH = os.path.abspath(PATH)
+sys.path.append(RPATH)
 import public.config as config
 from public.library import core
 

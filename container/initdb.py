@@ -11,6 +11,14 @@ DPORT = config.DEFAULT_PORT
 PASSD_STRING = config.PASS
 severLog = config.severLog
 
+if not os.path.exists(f"{config.WEBPATH}/data/sys.db"):
+	COOKIE_SECRET = core.generate_passphrase(32)
+	CYPHER = core.generate_passphrase(16)
+	print('Database does NOT exists.')
+else:
+	COOKIE_SECRET = config.COOKIE_SECRET
+	CYPHER = config.CYPHER
+
 
 def openDB(db_file):
 	""" create a database connection to the SQLite database
@@ -22,9 +30,10 @@ def openDB(db_file):
 	try:
 		conn = sqlite3.connect(db_file)
 		return conn
-	except Error as e:
-		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'', [e], 'openDB', ''))
-		print(e)
+	except:
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'', [], 'openDB', ''))
+		print('ERROR')
+		pass
 
 	return conn
 
@@ -38,13 +47,16 @@ def createDoc(conn, create_table_sql):
 	try:
 		c = conn.cursor()
 		c.execute(create_table_sql)
-	except Error as e:
-		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'', [e], 'createDoc', ''))
-		print(e)
+	except:
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'', [], 'createDoc', ''))
+		print('ERROR', 'createDoc')
 
-def gendb():
+
+def gendb(path=os.getcwd()):
 	""" Generare init database schema. """
-	database_name = r"./data/sys.db"
+	path = path
+	path = ''.join(str(path).split())
+	database_name = r"{0}/data/sys.db".format(path)
 	if not os.path.exists(database_name):
 		try:
 			# Create or connect to the database file
@@ -118,15 +130,18 @@ def gendb():
 			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'SQLite error:', [e], 'gendb', ''))
 			print(f"SQLite error: {e}")
 	else:
-		severLog.warning(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database already exists.', [database_name], 'gendb', ''))
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database already exists.', [database_name], 'gendb', ''))
 		print(f"Database '{database_name}' already exists.")
 
 
-def geninitfiles():
+def geninitfiles(path=os.getcwd(), PASSD_STRING=PASSD_STRING, COOKIE_SECRET=COOKIE_SECRET, CYPHER=CYPHER, reset=[]):
 	""" Create init files into public directory. """
-	COOKIE_SECRET = core.generate_passphrase(32)
-	CYPHER = core.generate_passphrase(16)
-	path = os.getcwd()
+	path = path
+	path = ''.join(str(path).split())
+	PASSD_STRING = PASSD_STRING
+	COOKIE_SECRET = COOKIE_SECRET
+	CYPHER = CYPHER
+	pass_file = '_pass_.py'
 	csecret_file = '_csecret_.py'
 	cypher_file = '_cypher_.py'
 	dport_file = '_dport_.py'
@@ -136,6 +151,11 @@ def geninitfiles():
 	passd_file = '_passd_.py'
 	generated_user_passd = '''{0}'''.format(core.generate_hex_password(PASSD_STRING, CYPHER))
 	try:
+		if os.path.exists(f"{path}/public/{pass_file}"):
+			with open("{0}/public/{1}".format(path, pass_file), 'w') as f:
+				f.write("PASS = '{0}'".format(PASSD_STRING))
+		else:
+			print('File pass DOES NOT exists.')
 		with open("{0}/public/{1}".format(path, csecret_file), 'w') as f:
 			f.write("COOKIE_SECRET = '{0}'".format(COOKIE_SECRET))
 		with open("{0}/public/{1}".format(path, cypher_file), 'w') as f:
@@ -154,15 +174,18 @@ def geninitfiles():
 		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Unexpected Fuction Error:', [sys.exc_info()[0]], 'geninitfiles', ''))
 		print("Unexpected geninitfiles Fuction Error:", sys.exc_info()[0])
 	severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Init files created.', [VERSION], 'geninitfiles', ''))
-	print('Version {0} init files created.'.format(VERSION))
+	if not reset:
+		print('Version {0} init files created.'.format(VERSION))
+		print('Password:', PASSD_STRING)
+	else:
+		print('Version {0} init files re-created.'.format(VERSION))
 
 
-def gencredentials():
+def gencredentials(path=os.getcwd()):
 	""" Generate init system credentials. """
-	COOKIE_SECRET = core.generate_passphrase(32)
-	CYPHER = core.generate_passphrase(16)
-	path = os.getcwd()
-	database_name = r"./data/sys.db"
+	path = path
+	path = ''.join(str(path).split())
+	database_name = r"{0}/data/sys.db".format(path)
 	generated_user_passd = '''{0}'''.format(core.generate_hex_password(PASSD_STRING, CYPHER))
 	generated_user_passb = core.generate_rsa_password(PASSD_STRING, CYPHER)
 	if os.path.exists(database_name):
@@ -198,12 +221,13 @@ def gencredentials():
 			conn.commit()
 			conn.close()
 
-			print(f"Credentials '{database_name}' created successfully.")
+			severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Database Credentials created successfully:', [database_name], 'gencredentials', ''))
+			print(f"Database Credentials created successfully.")
 		except sqlite3.Error as e:
 			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'SQLite Error:', [e], 'gencredentials', ''))
 			print(f"SQLite error: {e}")
 	else:
-		severLog.warning(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'gencredentials', ''))
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'gencredentials', ''))
 		print(f"Database '{database_name}' does NOT exists.")
 	pass
 
@@ -217,7 +241,7 @@ def createuser(name, email, passd_string, admin_role):
 	email = str(email)
 	passd_string = str(passd_string)
 	admin_role = int(admin_role)
-	database_name = r"./data/sys.db"
+	database_name = r"{0}/data/sys.db".format(path)
 	generated_user_passd = '''{0}'''.format(core.generate_hex_password(passd_string, CYPHER))
 	generated_user_passb = core.generate_rsa_password(passd_string, CYPHER)
 	if os.path.exists(database_name):
@@ -246,22 +270,24 @@ def createuser(name, email, passd_string, admin_role):
 			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'SQLite Error:', [e], 'createuser', ''))
 			print(f"SQLite error: {e}")
 	else:
-		severLog.warning(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'createuser', ''))
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'createuser', ''))
 		print(f"Database '{database_name}' does NOT exists. createuser()")
 	pass
 	return res
 
 
-def checkdbfile():
+def checkdbfile(path=os.getcwd()):
 	""" Check if sys.db already exist.
 	Return True - If database exists.
 	Return False - If database does NOT exists.
 	"""
-	database_name = r"./data/sys.db"
+	path = path
+	path = ''.join(str(path).split())
+	database_name = r"{0}/data/sys.db".format(path)
 	res = []
 	if not os.path.exists(database_name):
 		res = False
-		severLog.warning(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'checkdbfile', ''))
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'WARN', f'Database path does NOT exists.', [database_name], 'checkdbfile', ''))
 		print(f"Initial database '{database_name}' NOT created yet.\n")
 	else:
 		res = True
@@ -270,19 +296,35 @@ def checkdbfile():
 	return res
 
 
-def main():
-    if not checkdbfile():
-        # Generate cryptografic key pairs:
-        core.generate_secret()
-        # Generate init files:
-        geninitfiles()
-        # Generare init database schema:
-        gendb()
-        # Generate init admin credetials:
-        gencredentials()
-    else:
-        print(f"Skiping... System database already exists.\nTo re-initialize system, delete data/sys.db and run runsever --gendb.\n")
+def resetdbfiles(path):
+	path = path
+	path = ''.join(str(path).split())
+	path = r"{0}".format(path)
+	print('Reseting database...')
+	try:
+		os.remove(f"{path}/data/sys.db")
+		severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Deleted {path}/data/sys.db', [], 'resetfiles', ''))
+	except:
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Could not delete file: {path}/data/sys.db', [], 'resetfiles', ''))
+
+
+def main(path=os.getcwd()):
+	path = path
+	path = ''.join(str(path).split())
+	path = r"{0}".format(path)
+	PASSD_STRING = core.generate_passphrase()
+	if not checkdbfile():
+		# Generate cryptografic key pairs:
+		core.generate_secret(4096, path)
+		# Generate init files:
+		geninitfiles(path, PASSD_STRING)
+		# Generare init database schema:
+		gendb(path)
+		# Generate init admin credetials:
+		gencredentials(path)
+	else:
+		print(f"Skiping... System database already exists.\nTo re-initialize system, delete data/sys.db and run runsever --gendb.\n")
 
 
 if __name__ == '__main__':
-    main()
+	main()

@@ -136,6 +136,7 @@ def runApps():
 				json_msg = config.jsonLogger(core.getUTCNow(), 'INFO', f'Running app pid: {pid}', [app], 'runApps', '')
 				severLog.info(json_msg)
 				print(app[0], 'running on port:', app[2], 'pid:', pid)
+				print(f"http://localhost:{app[2]}")
 	except:
 		json_msg = config.jsonLogger(core.getUTCNow(), 'ERROR', f'Unexpected runRoutines Fuction Error: {sys.exc_info()[0]}', [app], 'runApps', '')
 		severLog.error(json_msg)
@@ -166,6 +167,7 @@ def runApp():
 				json_msg = config.jsonLogger(core.getUTCNow(), 'INFO', f'Running app pid: {pid}', [app], 'runApp', '')
 				severLog.info(json_msg)
 				print(app[0], 'running on port:', app[2], 'pid:', pid)
+				print(f"http://localhost:{app[2]}")
 	except:
 		json_msg = config.jsonLogger(core.getUTCNow(), 'ERROR', f'Unexpected runRoutines Fuction Error: {sys.exc_info()[0]}', [app], 'runApp', '')
 		severLog.error(json_msg)
@@ -431,6 +433,54 @@ def updateRoutine():
 		return []  # Return an empty array in case of an error
 
 
+def setPath(path=os.getcwd()):
+	""" Set path across system stettings.. """
+	path = path
+	manage = '_path_.py'
+	monitor = '_path_.py'
+	public = '_path_.py'
+	try:
+		path = str(arg[2]).replace(' ', '')
+		path = ''.join(str(path).split())
+		path = r"{0}".format(path)
+	except:
+		pass
+	destination_app = r"{0}/apps/manager/{1}".format(path, manage)
+	destination_routine = r"{0}/routines/monitor/{1}".format(path, monitor)
+	destination_public = r"{0}/public/{1}".format(path, public)
+	print('Setting path directory:', path)
+	if os.path.exists(f"{path}/public"):
+		try:
+			with open("{0}/apps/manage/handlers/{1}".format(path, manage), 'w') as f:
+				f.write("PATH = '{0}'".format(path))
+			severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Path set.', [path, 'manage', manage], 'setPath', ''))
+			print('{0} {1} path set.'.format(path, 'manage'))
+		except FileNotFoundError:
+			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Path set.', [path, 'manage', manage, sys.exc_info()[0]], 'setPath', ''))
+			print("Unexpected setPath Fuction Error:", sys.exc_info()[0])
+		
+		try:
+			with open("{0}/routines/monitor/handlers/{1}".format(path, monitor), 'w') as f:
+				f.write("PATH = '{0}'".format(path))
+			severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Path set.', [path, 'monitor', monitor], 'setPath', ''))
+			print('{0} {1} path set.'.format(path, 'monitor'))
+		except FileNotFoundError:
+			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Path set.', [path, 'monitor', manage, sys.exc_info()[0]], 'setPath', ''))
+			print("Unexpected setPath Fuction Error:", sys.exc_info()[0])
+		
+		try:
+			with open("{0}/public/{1}".format(path, public), 'w') as f:
+				f.write("PATH = '{0}'".format(path))
+			severLog.info(config.jsonLogger(core.getUTCNow(), 'INFO', f'Path set.', [path, 'public', manage], 'setPath', ''))
+			print('{0} {1} path set.'.format(path, 'public'))
+		except FileNotFoundError:
+			severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Path set.', [path, 'public', manage, sys.exc_info()[0]], 'setPath', ''))
+			print("Unexpected setPath Fuction Error:", sys.exc_info()[0])
+	else:
+		severLog.error(config.jsonLogger(core.getUTCNow(), 'ERROR', f'Path config directory not found.', [path], 'setPath', ''))
+		print('{0} config directory not found. setPath()'.format(f"{path}/public"))
+
+
 def showVersion():
 	""" Show application version. """
 	print(VERSION)
@@ -438,8 +488,34 @@ def showVersion():
 
 def gendb():
 	""" Generate initial database settings. """
-	initdb.main()
+	path=os.getcwd()
+	try:
+		path = ''.join(str(arg[2]).split())
+		path = r"{0}".format(path)
+	except:
+		pass
+	initdb.main(path)
+	setPath(path)
 	json_msg = config.jsonLogger(core.getUTCNow(), 'INFO', f'Generate initial database settings.', [], 'gendb', '')
+	severLog.info(json_msg)
+
+
+def resetdb():
+	""" Reset initial database settings. """
+	path=os.getcwd()
+	PASSD_STRING = core.generate_passphrase()
+	COOKIE_SECRET = core.generate_passphrase(32)
+	CYPHER = core.generate_passphrase(16)
+	try:
+		path = ''.join(str(arg[2]).split())
+		path = r"{0}".format(path)
+	except:
+		pass
+	initdb.resetdbfiles(path)
+	initdb.geninitfiles(path, PASSD_STRING, COOKIE_SECRET, CYPHER, reset=1)
+	initdb.main(path)
+	setPath(path)
+	json_msg = config.jsonLogger(core.getUTCNow(), 'INFO', f'Reset initial database settings.', [], 'resetdb', '')
 	severLog.info(json_msg)
 
 
@@ -447,7 +523,11 @@ def showHelp():
 	print(VERSION)
 	print("$ cwf -v | Show version number.")
 	print("$ cwf -h | Shows Help Menu.")
-	print("$ cwf --init | Initialize database settings.")
+	print("$ cwf --init | Initialize database settings using current directory as path.")
+	print("$ cwf --init '/path/to/cwf/container' | Initialize database settings.")
+	print("$ cwf --reset | Reset database settings using current directory as path.")
+	print("$ cwf --reset '/path/to/cwf/container' | Reset database settings.")
+	print("$ cwf --setpath '/path/to/cwf/container' | Set/Update container path settings.")
 	print("$ cwf --listapps | List all apps.")
 	print("$ cwf --listroutines | List all routine apps.")
 	print("$ cwf --apps | Runs enabled apps.")
@@ -476,6 +556,8 @@ def optionCheck():
 		'-v': showVersion,
 		'-h': showHelp,
 		'--init': gendb,
+		'--reset': resetdb,
+		'--setpath': setPath,
 		'--apps': runApps,
 		'--runapp': runApp,
 		'--runroutine': runRoutine,

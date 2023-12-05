@@ -74,3 +74,12 @@ Version: 0.14
 12-02-2023
 Version: 0.15
 * JSON Log API (server.log & access.log) across all core libraries, routines, and apps.
+
+12-04-2023
+Version: 0.15.1
+* Random default password using generate_passphrase function.
+$ cwf --init | Initialize database settings using current directory as path."
+$ cwf --init '/path/to/cwf/container' | Initialize database settings."
+$ cwf --reset | Reset database settings using current directory as path."
+$ cwf --reset '/path/to/cwf/container' | Reset database settings."
+$ cwf --setpath '/path/to/cwf/container' | Set/Update container path settings."
