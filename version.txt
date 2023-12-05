@@ -78,6 +78,7 @@ Version: 0.15
 12-04-2023
 Version: 0.15.1
 * Random default password using generate_passphrase function.
+* Fixed the correct default password being recorded in the database and config files.
 $ cwf --init | Initialize database settings using current directory as path."
 $ cwf --init '/path/to/cwf/container' | Initialize database settings."
 $ cwf --reset | Reset database settings using current directory as path."

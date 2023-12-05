@@ -12,8 +12,8 @@ PASSD_STRING = config.PASS
 severLog = config.severLog
 
 if not os.path.exists(f"{config.WEBPATH}/data/sys.db"):
-	COOKIE_SECRET = core.generate_passphrase(32)
-	CYPHER = core.generate_passphrase(16)
+	COOKIE_SECRET = ''
+	CYPHER = ''
 	print('Database does NOT exists.')
 else:
 	COOKIE_SECRET = config.COOKIE_SECRET
@@ -181,10 +181,13 @@ def geninitfiles(path=os.getcwd(), PASSD_STRING=PASSD_STRING, COOKIE_SECRET=COOK
 		print('Version {0} init files re-created.'.format(VERSION))
 
 
-def gencredentials(path=os.getcwd()):
+def gencredentials(path=os.getcwd(), PASSD_STRING=PASSD_STRING, COOKIE_SECRET=COOKIE_SECRET, CYPHER=CYPHER):
 	""" Generate init system credentials. """
 	path = path
 	path = ''.join(str(path).split())
+	PASSD_STRING = PASSD_STRING
+	COOKIE_SECRET = COOKIE_SECRET
+	CYPHER = CYPHER
 	database_name = r"{0}/data/sys.db".format(path)
 	generated_user_passd = '''{0}'''.format(core.generate_hex_password(PASSD_STRING, CYPHER))
 	generated_user_passb = core.generate_rsa_password(PASSD_STRING, CYPHER)
@@ -313,15 +316,17 @@ def main(path=os.getcwd()):
 	path = ''.join(str(path).split())
 	path = r"{0}".format(path)
 	PASSD_STRING = core.generate_passphrase()
+	CYPHER = core.generate_passphrase(16)
+	COOKIE_SECRET = core.generate_passphrase(32)
 	if not checkdbfile():
 		# Generate cryptografic key pairs:
 		core.generate_secret(4096, path)
 		# Generate init files:
-		geninitfiles(path, PASSD_STRING)
+		geninitfiles(path, PASSD_STRING, COOKIE_SECRET, CYPHER)
 		# Generare init database schema:
 		gendb(path)
 		# Generate init admin credetials:
-		gencredentials(path)
+		gencredentials(path, PASSD_STRING, COOKIE_SECRET, CYPHER)
 	else:
 		print(f"Skiping... System database already exists.\nTo re-initialize system, delete data/sys.db and run runsever --gendb.\n")
 
